@@ -1,0 +1,8 @@
+package automy.lidar;
+
+struct raw_point_t {
+	
+	float distance;				// [m]
+	float intensity;			// 0 to 1.0 [1]
+	
+}

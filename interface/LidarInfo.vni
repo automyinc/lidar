@@ -1,0 +1,15 @@
+package automy.lidar;
+
+import automy.math.Vector3d;
+
+class LidarInfo extends automy.basic.Transform3D {
+	
+	Vector3d position;				// relative to center rear axle (x, y, z) [m]
+	
+	Vector3d rotation;				// intrinsic axis rotation (roll, pitch, yaw) [rad]
+	
+	int delay;						// time delay [usec]
+	
+	void update();					// recompute matrix using position and rotation
+	
+}

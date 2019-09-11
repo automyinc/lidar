@@ -1,0 +1,11 @@
+package automy.lidar;
+
+class PointCloud {
+	
+	long time;
+	
+	string frame;
+	
+	vector<point_t> points;
+	
+}

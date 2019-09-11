@@ -1,0 +1,7 @@
+Package: automy-lidar
+Section: base
+Priority: optional
+Depends: vnx-base, automy-math, automy-basic, automy-vehicle
+Maintainer: Max Wittal <max.wittal@automyinc.com>
+Description: Automy lidar package
+Architecture: all

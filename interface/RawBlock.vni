@@ -1,0 +1,9 @@
+package automy.lidar;
+
+class RawBlock {
+	
+	long time;
+	float angle;						// [rad]
+	vector<raw_point_t> points;
+	
+}

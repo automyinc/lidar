@@ -1,0 +1,13 @@
+package automy.lidar;
+
+class Package {
+	
+	long time;
+	long time_offset;					// sensor to vehicle time offset [usec]
+	
+	vector<RawBlock> blocks;
+	
+	vector<float> beam_angles;
+	vector<float> beam_rot_shift;
+	
+}
