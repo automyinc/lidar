@@ -14,8 +14,8 @@ target_include_directories(automy_lidar PUBLIC include generated/include)
 
 target_link_libraries(automy_lidar automy_vehicle automy_basic automy_math vnx_base)
 
-install(DIRECTORY include/ DESTINATION include/automy)
-install(DIRECTORY generated/include/ DESTINATION include/automy)
+install(DIRECTORY include/ DESTINATION include)
+install(DIRECTORY generated/include/ DESTINATION include)
 install(DIRECTORY interface/ DESTINATION interface/automy/lidar)
 
 install(TARGETS automy_lidar DESTINATION lib)
