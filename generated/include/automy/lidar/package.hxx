@@ -10,9 +10,19 @@
 #include <automy/math/package.hxx>
 #include <vnx/package.hxx>
 
+#ifdef AUTOMY_LIDAR_EXPORT_ENABLE
+#include <automy_lidar_export.h>
+#else
+#ifndef AUTOMY_LIDAR_EXPORT
+#define AUTOMY_LIDAR_EXPORT
+#endif
+#endif
+
 
 namespace automy {
 namespace lidar {
+
+void register_all_types();
 
 
 class LidarInfo;
@@ -21,6 +31,13 @@ class PointCloud;
 class RawBlock;
 struct point_t;
 struct raw_point_t;
+
+AUTOMY_LIDAR_EXPORT extern const vnx::TypeCode* const vnx_native_type_code_LidarInfo; ///< \private
+AUTOMY_LIDAR_EXPORT extern const vnx::TypeCode* const vnx_native_type_code_Package; ///< \private
+AUTOMY_LIDAR_EXPORT extern const vnx::TypeCode* const vnx_native_type_code_PointCloud; ///< \private
+AUTOMY_LIDAR_EXPORT extern const vnx::TypeCode* const vnx_native_type_code_RawBlock; ///< \private
+AUTOMY_LIDAR_EXPORT extern const vnx::TypeCode* const vnx_native_type_code_point_t; ///< \private
+AUTOMY_LIDAR_EXPORT extern const vnx::TypeCode* const vnx_native_type_code_raw_point_t; ///< \private
 
 } // namespace automy
 } // namespace lidar
@@ -81,9 +98,9 @@ struct type<::automy::lidar::LidarInfo> {
 	void accept(Visitor& visitor, const ::automy::lidar::LidarInfo& value) {
 		vnx::accept(visitor, value);
 	}
-	void create_dynamic_code(std::vector<uint16_t>& code) {
-		code.push_back(CODE_ANY);
-	}
+	const TypeCode* get_type_code();
+	void create_dynamic_code(std::vector<uint16_t>& code);
+	void create_dynamic_code(std::vector<uint16_t>& code, const ::automy::lidar::LidarInfo& value, bool special = false);
 };
 
 /// \private
@@ -104,9 +121,9 @@ struct type<::automy::lidar::Package> {
 	void accept(Visitor& visitor, const ::automy::lidar::Package& value) {
 		vnx::accept(visitor, value);
 	}
-	void create_dynamic_code(std::vector<uint16_t>& code) {
-		code.push_back(CODE_ANY);
-	}
+	const TypeCode* get_type_code();
+	void create_dynamic_code(std::vector<uint16_t>& code);
+	void create_dynamic_code(std::vector<uint16_t>& code, const ::automy::lidar::Package& value, bool special = false);
 };
 
 /// \private
@@ -127,9 +144,9 @@ struct type<::automy::lidar::PointCloud> {
 	void accept(Visitor& visitor, const ::automy::lidar::PointCloud& value) {
 		vnx::accept(visitor, value);
 	}
-	void create_dynamic_code(std::vector<uint16_t>& code) {
-		code.push_back(CODE_ANY);
-	}
+	const TypeCode* get_type_code();
+	void create_dynamic_code(std::vector<uint16_t>& code);
+	void create_dynamic_code(std::vector<uint16_t>& code, const ::automy::lidar::PointCloud& value, bool special = false);
 };
 
 /// \private
@@ -150,9 +167,9 @@ struct type<::automy::lidar::RawBlock> {
 	void accept(Visitor& visitor, const ::automy::lidar::RawBlock& value) {
 		vnx::accept(visitor, value);
 	}
-	void create_dynamic_code(std::vector<uint16_t>& code) {
-		code.push_back(CODE_ANY);
-	}
+	const TypeCode* get_type_code();
+	void create_dynamic_code(std::vector<uint16_t>& code);
+	void create_dynamic_code(std::vector<uint16_t>& code, const ::automy::lidar::RawBlock& value, bool special = false);
 };
 
 /// \private
@@ -173,9 +190,9 @@ struct type<::automy::lidar::point_t> {
 	void accept(Visitor& visitor, const ::automy::lidar::point_t& value) {
 		vnx::accept(visitor, value);
 	}
-	void create_dynamic_code(std::vector<uint16_t>& code) {
-		code.push_back(CODE_ANY);
-	}
+	const TypeCode* get_type_code();
+	void create_dynamic_code(std::vector<uint16_t>& code);
+	void create_dynamic_code(std::vector<uint16_t>& code, const ::automy::lidar::point_t& value, bool special = false);
 };
 
 /// \private
@@ -196,9 +213,9 @@ struct type<::automy::lidar::raw_point_t> {
 	void accept(Visitor& visitor, const ::automy::lidar::raw_point_t& value) {
 		vnx::accept(visitor, value);
 	}
-	void create_dynamic_code(std::vector<uint16_t>& code) {
-		code.push_back(CODE_ANY);
-	}
+	const TypeCode* get_type_code();
+	void create_dynamic_code(std::vector<uint16_t>& code);
+	void create_dynamic_code(std::vector<uint16_t>& code, const ::automy::lidar::raw_point_t& value, bool special = false);
 };
 
 

@@ -3,11 +3,10 @@
 
 #include <automy/lidar/package.hxx>
 #include <automy/lidar/RawBlock.hxx>
-#include <vnx/Input.h>
-#include <vnx/Output.h>
-#include <vnx/Visitor.h>
-#include <vnx/Object.h>
-#include <vnx/Struct.h>
+#include <automy/lidar/raw_point_t.hxx>
+#include <vnx/Value.h>
+
+#include <vnx/vnx.h>
 
 
 namespace automy {
@@ -21,8 +20,12 @@ vnx::Hash64 RawBlock::get_type_hash() const {
 	return VNX_TYPE_HASH;
 }
 
-const char* RawBlock::get_type_name() const {
+std::string RawBlock::get_type_name() const {
 	return "automy.lidar.RawBlock";
+}
+
+const vnx::TypeCode* RawBlock::get_type_code() const {
+	return automy::lidar::vnx_native_type_code_RawBlock;
 }
 
 std::shared_ptr<RawBlock> RawBlock::create() {
@@ -42,7 +45,7 @@ void RawBlock::write(vnx::TypeOutput& _out, const vnx::TypeCode* _type_code, con
 }
 
 void RawBlock::accept(vnx::Visitor& _visitor) const {
-	const vnx::TypeCode* _type_code = get_type_code();
+	const vnx::TypeCode* _type_code = automy::lidar::vnx_native_type_code_RawBlock;
 	_visitor.type_begin(*_type_code);
 	_visitor.type_field(_type_code->fields[0], 0); vnx::accept(_visitor, time);
 	_visitor.type_field(_type_code->fields[1], 1); vnx::accept(_visitor, angle);
@@ -51,29 +54,22 @@ void RawBlock::accept(vnx::Visitor& _visitor) const {
 }
 
 void RawBlock::write(std::ostream& _out) const {
-	_out << "{";
-	_out << "\"time\": "; vnx::write(_out, time);
+	_out << "{\"__type\": \"automy.lidar.RawBlock\"";
+	_out << ", \"time\": "; vnx::write(_out, time);
 	_out << ", \"angle\": "; vnx::write(_out, angle);
 	_out << ", \"points\": "; vnx::write(_out, points);
 	_out << "}";
 }
 
 void RawBlock::read(std::istream& _in) {
-	std::map<std::string, std::string> _object;
-	vnx::read_object(_in, _object);
-	for(const auto& _entry : _object) {
-		if(_entry.first == "angle") {
-			vnx::from_string(_entry.second, angle);
-		} else if(_entry.first == "points") {
-			vnx::from_string(_entry.second, points);
-		} else if(_entry.first == "time") {
-			vnx::from_string(_entry.second, time);
-		}
+	if(auto _json = vnx::read_json(_in)) {
+		from_object(_json->to_object());
 	}
 }
 
 vnx::Object RawBlock::to_object() const {
 	vnx::Object _object;
+	_object["__type"] = "automy.lidar.RawBlock";
 	_object["time"] = time;
 	_object["angle"] = angle;
 	_object["points"] = points;
@@ -92,6 +88,29 @@ void RawBlock::from_object(const vnx::Object& _object) {
 	}
 }
 
+vnx::Variant RawBlock::get_field(const std::string& _name) const {
+	if(_name == "time") {
+		return vnx::Variant(time);
+	}
+	if(_name == "angle") {
+		return vnx::Variant(angle);
+	}
+	if(_name == "points") {
+		return vnx::Variant(points);
+	}
+	return vnx::Variant();
+}
+
+void RawBlock::set_field(const std::string& _name, const vnx::Variant& _value) {
+	if(_name == "time") {
+		_value.to(time);
+	} else if(_name == "angle") {
+		_value.to(angle);
+	} else if(_name == "points") {
+		_value.to(points);
+	}
+}
+
 /// \private
 std::ostream& operator<<(std::ostream& _out, const RawBlock& _value) {
 	_value.write(_out);
@@ -104,42 +123,52 @@ std::istream& operator>>(std::istream& _in, RawBlock& _value) {
 	return _in;
 }
 
-const vnx::TypeCode* RawBlock::get_type_code() {
-	const vnx::TypeCode* type_code = vnx::get_type_code(vnx::Hash64(0x78229d23be53c72dull));
+const vnx::TypeCode* RawBlock::static_get_type_code() {
+	const vnx::TypeCode* type_code = vnx::get_type_code(VNX_TYPE_HASH);
 	if(!type_code) {
-		type_code = vnx::register_type_code(create_type_code());
+		type_code = vnx::register_type_code(static_create_type_code());
 	}
 	return type_code;
 }
 
-std::shared_ptr<vnx::TypeCode> RawBlock::create_type_code() {
-	std::shared_ptr<vnx::TypeCode> type_code = std::make_shared<vnx::TypeCode>(true);
+std::shared_ptr<vnx::TypeCode> RawBlock::static_create_type_code() {
+	auto type_code = std::make_shared<vnx::TypeCode>();
 	type_code->name = "automy.lidar.RawBlock";
 	type_code->type_hash = vnx::Hash64(0x78229d23be53c72dull);
 	type_code->code_hash = vnx::Hash64(0xd0ab3f63da52986eull);
+	type_code->is_native = true;
 	type_code->is_class = true;
+	type_code->native_size = sizeof(::automy::lidar::RawBlock);
 	type_code->create_value = []() -> std::shared_ptr<vnx::Value> { return std::make_shared<RawBlock>(); };
 	type_code->depends.resize(1);
-	type_code->depends[0] = ::automy::lidar::raw_point_t::get_type_code();
+	type_code->depends[0] = ::automy::lidar::raw_point_t::static_get_type_code();
 	type_code->fields.resize(3);
 	{
-		vnx::TypeField& field = type_code->fields[0];
+		auto& field = type_code->fields[0];
+		field.data_size = 8;
 		field.name = "time";
 		field.code = {8};
 	}
 	{
-		vnx::TypeField& field = type_code->fields[1];
+		auto& field = type_code->fields[1];
+		field.data_size = 4;
 		field.name = "angle";
 		field.code = {9};
 	}
 	{
-		vnx::TypeField& field = type_code->fields[2];
+		auto& field = type_code->fields[2];
 		field.is_extended = true;
 		field.name = "points";
 		field.code = {12, 19, 0};
 	}
 	type_code->build();
 	return type_code;
+}
+
+std::shared_ptr<vnx::Value> RawBlock::vnx_call_switch(std::shared_ptr<const vnx::Value> _method) {
+	switch(_method->get_type_hash()) {
+	}
+	return nullptr;
 }
 
 
@@ -150,32 +179,45 @@ std::shared_ptr<vnx::TypeCode> RawBlock::create_type_code() {
 namespace vnx {
 
 void read(TypeInput& in, ::automy::lidar::RawBlock& value, const TypeCode* type_code, const uint16_t* code) {
+	if(code) {
+		switch(code[0]) {
+			case CODE_OBJECT:
+			case CODE_ALT_OBJECT: {
+				Object tmp;
+				vnx::read(in, tmp, type_code, code);
+				value.from_object(tmp);
+				return;
+			}
+			case CODE_DYNAMIC:
+			case CODE_ALT_DYNAMIC:
+				vnx::read_dynamic(in, value);
+				return;
+		}
+	}
 	if(!type_code) {
-		throw std::logic_error("read(): type_code == 0");
+		vnx::skip(in, type_code, code);
+		return;
 	}
 	if(code) {
 		switch(code[0]) {
 			case CODE_STRUCT: type_code = type_code->depends[code[1]]; break;
 			case CODE_ALT_STRUCT: type_code = type_code->depends[vnx::flip_bytes(code[1])]; break;
-			default: vnx::skip(in, type_code, code); return;
+			default: {
+				vnx::skip(in, type_code, code);
+				return;
+			}
 		}
 	}
-	const char* const _buf = in.read(type_code->total_field_size);
+	const auto* const _buf = in.read(type_code->total_field_size);
 	if(type_code->is_matched) {
-		{
-			const vnx::TypeField* const _field = type_code->field_map[0];
-			if(_field) {
-				vnx::read_value(_buf + _field->offset, value.time, _field->code.data());
-			}
+		if(const auto* const _field = type_code->field_map[0]) {
+			vnx::read_value(_buf + _field->offset, value.time, _field->code.data());
 		}
-		{
-			const vnx::TypeField* const _field = type_code->field_map[1];
-			if(_field) {
-				vnx::read_value(_buf + _field->offset, value.angle, _field->code.data());
-			}
+		if(const auto* const _field = type_code->field_map[1]) {
+			vnx::read_value(_buf + _field->offset, value.angle, _field->code.data());
 		}
 	}
-	for(const vnx::TypeField* _field : type_code->ext_fields) {
+	for(const auto* _field : type_code->ext_fields) {
 		switch(_field->native_index) {
 			case 2: vnx::read(in, value.points, type_code, _field->code.data()); break;
 			default: vnx::skip(in, type_code, _field->code.data());
@@ -184,14 +226,19 @@ void read(TypeInput& in, ::automy::lidar::RawBlock& value, const TypeCode* type_
 }
 
 void write(TypeOutput& out, const ::automy::lidar::RawBlock& value, const TypeCode* type_code, const uint16_t* code) {
+	if(code && code[0] == CODE_OBJECT) {
+		vnx::write(out, value.to_object(), nullptr, code);
+		return;
+	}
 	if(!type_code || (code && code[0] == CODE_ANY)) {
-		type_code = vnx::write_type_code<::automy::lidar::RawBlock>(out);
+		type_code = automy::lidar::vnx_native_type_code_RawBlock;
+		out.write_type_code(type_code);
 		vnx::write_class_header<::automy::lidar::RawBlock>(out);
 	}
-	if(code && code[0] == CODE_STRUCT) {
+	else if(code && code[0] == CODE_STRUCT) {
 		type_code = type_code->depends[code[1]];
 	}
-	char* const _buf = out.write(12);
+	auto* const _buf = out.write(12);
 	vnx::write_value(_buf + 0, value.time);
 	vnx::write_value(_buf + 8, value.angle);
 	vnx::write(out, value.points, type_code, type_code->fields[2].code.data());
